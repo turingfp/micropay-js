@@ -1,0 +1,41 @@
+{
+    "name": "@micropaysdk/react",
+    "version": "1.0.0",
+    "description": "React components and hooks for Micropay mobile money payments",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./src/index.js",
+    "exports": {
+        ".": {
+            "import": "./src/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./styles.css": "./src/styles/styles.css"
+    },
+    "scripts": {
+        "build": "babel src -d dist --out-file-extension .cjs --presets @babel/preset-env,@babel/preset-react",
+        "test": "vitest",
+        "storybook": "storybook dev -p 6006",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "micropay",
+        "react",
+        "payments",
+        "mpesa",
+        "mobile-money"
+    ],
+    "author": "Micropay Team",
+    "license": "MIT",
+    "peerDependencies": {
+        "react": ">=17.0.0",
+        "react-dom": ">=17.0.0"
+    },
+    "dependencies": {
+        "@micropaysdk/core": "^1.0.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.0",
+        "vitest": "^1.0.0"
+    }
+}

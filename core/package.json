@@ -1,0 +1,50 @@
+{
+    "name": "@micropaysdk/core",
+    "version": "1.0.0",
+    "description": "Micropay - Mobile money micropayments for emerging markets",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./src/index.js",
+    "types": "./src/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./src/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "scripts": {
+        "build": "babel src -d dist --out-file-extension .cjs",
+        "test": "vitest",
+        "lint": "eslint src/",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "micropayments",
+        "mpesa",
+        "mobile-money",
+        "payments",
+        "africa",
+        "emerging-markets",
+        "fintech"
+    ],
+    "author": "Micropay Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/micropay/sdk"
+    },
+    "files": [
+        "src",
+        "dist"
+    ],
+    "dependencies": {
+        "@paymentsds/mpesa": "^0.1.0-alpha-9"
+    },
+    "devDependencies": {
+        "vitest": "^1.0.0"
+    },
+    "peerDependencies": {},
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}

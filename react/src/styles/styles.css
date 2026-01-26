@@ -1,0 +1,1057 @@
+/**
+ * Micropay React SDK Styles - African Fintech Design
+ * 
+ * Design Principles:
+ * - Mobile-first for low-end Android devices
+ * - Large touch targets (56px minimum)
+ * - High contrast for outdoor visibility
+ * - Regional color themes (Nigeria, Kenya, SA)
+ * - Trust indicators throughout
+ * - Simple, uncluttered layouts
+ */
+
+/* ============================================
+   CSS Custom Properties - Base Theme
+   ============================================ */
+:root {
+  /* Default Colors (Safaricom/M-Pesa Green - Kenya) */
+  --micropay-primary: #00A651;
+  --micropay-primary-hover: #008c44;
+  --micropay-primary-light: rgba(0, 166, 81, 0.12);
+  --micropay-primary-dark: #006633;
+
+  /* Secondary */
+  --micropay-secondary: #1a1a2e;
+  --micropay-accent: #FFD700;
+
+  /* Status Colors */
+  --micropay-success: #00A651;
+  --micropay-error: #E53935;
+  --micropay-error-light: rgba(229, 57, 53, 0.1);
+  --micropay-warning: #FF9800;
+
+  /* Text - High contrast for outdoor visibility */
+  --micropay-text: #1a1a1a;
+  --micropay-text-secondary: #4a4a4a;
+  --micropay-text-muted: #757575;
+  --micropay-text-on-primary: #FFFFFF;
+
+  /* Backgrounds */
+  --micropay-bg: #FFFFFF;
+  --micropay-bg-secondary: #F5F5F5;
+  --micropay-bg-tertiary: #EEEEEE;
+  --micropay-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Borders */
+  --micropay-border: #E0E0E0;
+  --micropay-border-strong: #BDBDBD;
+
+  /* Sizing - Large for touch */
+  --micropay-radius: 16px;
+  --micropay-radius-sm: 12px;
+  --micropay-radius-xs: 8px;
+  --micropay-touch-target: 56px;
+  /* Minimum 48px, we use 56px */
+  --micropay-button-height: 56px;
+
+  /* Typography - Large, legible */
+  --micropay-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --micropay-font-size-xs: 13px;
+  --micropay-font-size-sm: 15px;
+  --micropay-font-size-md: 17px;
+  --micropay-font-size-lg: 20px;
+  --micropay-font-size-xl: 24px;
+  --micropay-font-size-xxl: 32px;
+
+  /* Safe areas */
+  --micropay-safe-top: env(safe-area-inset-top, 0px);
+  --micropay-safe-bottom: env(safe-area-inset-bottom, 20px);
+
+  /* Shadows - Subtle */
+  --micropay-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --micropay-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --micropay-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+/* ============================================
+   Regional Themes
+   ============================================ */
+
+/* Nigeria Theme - Purple & Lavender (OPay, Palmpay inspired) */
+.micropay-theme-nigeria {
+  --micropay-primary: #5B2C6F;
+  --micropay-primary-hover: #4a2459;
+  --micropay-primary-light: rgba(91, 44, 111, 0.12);
+  --micropay-primary-dark: #3d1e4a;
+  --micropay-accent: #E74C3C;
+}
+
+/* Kenya Theme - Safaricom Green */
+.micropay-theme-kenya {
+  --micropay-primary: #00A651;
+  --micropay-primary-hover: #008c44;
+  --micropay-primary-light: rgba(0, 166, 81, 0.12);
+  --micropay-primary-dark: #006633;
+  --micropay-accent: #E60000;
+}
+
+/* South Africa Theme - FNB Teal/Standard Bank Blue */
+.micropay-theme-southafrica {
+  --micropay-primary: #00838F;
+  --micropay-primary-hover: #006978;
+  --micropay-primary-light: rgba(0, 131, 143, 0.12);
+  --micropay-primary-dark: #004d56;
+  --micropay-accent: #FFB300;
+}
+
+/* Dark Mode */
+.micropay-dark {
+  --micropay-text: #FAFAFA;
+  --micropay-text-secondary: #E0E0E0;
+  --micropay-text-muted: #9E9E9E;
+  --micropay-bg: #121212;
+  --micropay-bg-secondary: #1E1E1E;
+  --micropay-bg-tertiary: #2C2C2C;
+  --micropay-border: #333333;
+  --micropay-border-strong: #444444;
+  --micropay-overlay: rgba(0, 0, 0, 0.85);
+}
+
+/* ============================================
+   Popup Overlay - Bottom Sheet Style
+   ============================================ */
+.micropay-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: var(--micropay-overlay);
+  animation: micropay-fade-in 0.2s ease-out;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+@keyframes micropay-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Popup Container
+   ============================================ */
+.micropay-popup {
+  background: var(--micropay-bg);
+  width: 100%;
+  max-height: 95vh;
+  max-height: 95dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-family: var(--micropay-font-family);
+  color: var(--micropay-text);
+  animation: micropay-slide-up 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+  padding-bottom: var(--micropay-safe-bottom);
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .micropay-popup-overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .micropay-popup {
+    max-width: 440px;
+    max-height: 90vh;
+    border-radius: var(--micropay-radius);
+    box-shadow: var(--micropay-shadow-lg);
+  }
+}
+
+@keyframes micropay-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Swipe Handle
+   ============================================ */
+.micropay-popup__swipe-handle {
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 8px;
+  cursor: grab;
+}
+
+.micropay-popup__swipe-bar {
+  width: 40px;
+  height: 5px;
+  background: var(--micropay-border-strong);
+  border-radius: 3px;
+}
+
+@media (min-width: 640px) {
+  .micropay-popup__swipe-handle {
+    display: none;
+  }
+}
+
+/* ============================================
+   Header with Trust Indicators
+   ============================================ */
+.micropay-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px 16px;
+  border-bottom: 1px solid var(--micropay-border);
+}
+
+.micropay-popup__trust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.micropay-popup__lock-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--micropay-primary);
+}
+
+.micropay-popup__trust-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.micropay-popup__trust-title {
+  font-size: var(--micropay-font-size-sm);
+  font-weight: 600;
+  color: var(--micropay-text);
+}
+
+.micropay-popup__trust-subtitle {
+  font-size: var(--micropay-font-size-xs);
+  color: var(--micropay-primary);
+  font-weight: 500;
+}
+
+.micropay-popup__close {
+  width: var(--micropay-touch-target);
+  height: var(--micropay-touch-target);
+  min-width: var(--micropay-touch-target);
+  border: none;
+  background: var(--micropay-bg-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--micropay-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.micropay-popup__close:active {
+  background: var(--micropay-bg-tertiary);
+  transform: scale(0.95);
+}
+
+.micropay-popup__close svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ============================================
+   Amount Display - Large & Clear
+   ============================================ */
+.micropay-popup__amount-section {
+  text-align: center;
+  padding: 28px 20px;
+  background: linear-gradient(180deg, var(--micropay-bg-secondary) 0%, var(--micropay-bg) 100%);
+}
+
+.micropay-popup__merchant {
+  font-size: var(--micropay-font-size-md);
+  color: var(--micropay-text-secondary);
+  margin-bottom: 8px;
+}
+
+.micropay-popup__amount-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.micropay-popup__currency-symbol {
+  font-size: var(--micropay-font-size-xl);
+  font-weight: 600;
+  color: var(--micropay-text);
+}
+
+.micropay-popup__amount-value {
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--micropay-text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Fee breakdown - transparent */
+.micropay-popup__fee-info {
+  font-size: var(--micropay-font-size-xs);
+  color: var(--micropay-text-muted);
+  margin-top: 8px;
+}
+
+.micropay-popup__fee-info strong {
+  color: var(--micropay-text-secondary);
+}
+
+/* ============================================
+   Content Area
+   ============================================ */
+.micropay-popup__content {
+  padding: 24px 20px 28px;
+}
+
+/* ============================================
+   Phone Input - Large Touch Target
+   ============================================ */
+.micropay-phone-input {
+  margin-bottom: 16px;
+}
+
+.micropay-phone-input__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--micropay-font-size-md);
+  font-weight: 600;
+  color: var(--micropay-text);
+  margin-bottom: 12px;
+}
+
+.micropay-phone-input__label-icon {
+  font-size: 20px;
+}
+
+.micropay-phone-input__container {
+  display: flex;
+  border: 2px solid var(--micropay-border);
+  border-radius: var(--micropay-radius-sm);
+  overflow: hidden;
+  background: var(--micropay-bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.micropay-phone-input--focused .micropay-phone-input__container {
+  border-color: var(--micropay-primary);
+  box-shadow: 0 0 0 4px var(--micropay-primary-light);
+}
+
+.micropay-phone-input--error .micropay-phone-input__container {
+  border-color: var(--micropay-error);
+  box-shadow: 0 0 0 4px var(--micropay-error-light);
+}
+
+.micropay-phone-input__prefix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  min-height: var(--micropay-touch-target);
+  background: var(--micropay-bg-secondary);
+  border-right: 1px solid var(--micropay-border);
+  flex-shrink: 0;
+}
+
+.micropay-phone-input__flag {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.micropay-phone-input__code {
+  font-size: var(--micropay-font-size-md);
+  font-weight: 600;
+  color: var(--micropay-text-secondary);
+}
+
+.micropay-phone-input__field {
+  flex: 1;
+  min-height: var(--micropay-touch-target);
+  padding: 16px;
+  border: none;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: inherit;
+  background: transparent;
+  color: var(--micropay-text);
+  letter-spacing: 1.5px;
+  min-width: 0;
+}
+
+.micropay-phone-input__field:focus {
+  outline: none;
+}
+
+.micropay-phone-input__field::placeholder {
+  color: var(--micropay-text-muted);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.micropay-phone-input__error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--micropay-font-size-sm);
+  color: var(--micropay-error);
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--micropay-error-light);
+  border-radius: var(--micropay-radius-xs);
+}
+
+.micropay-phone-input__error-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Primary Button - Large, Prominent
+   ============================================ */
+.micropay-popup__submit {
+  width: 100%;
+  min-height: var(--micropay-button-height);
+  padding: 18px 24px;
+  background: var(--micropay-primary);
+  color: var(--micropay-text-on-primary);
+  border: none;
+  border-radius: var(--micropay-radius-sm);
+  font-size: var(--micropay-font-size-lg);
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--micropay-shadow-sm);
+}
+
+.micropay-popup__submit:hover:not(:disabled) {
+  background: var(--micropay-primary-hover);
+  box-shadow: var(--micropay-shadow-md);
+}
+
+.micropay-popup__submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.micropay-popup__submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.micropay-popup__submit-icon {
+  font-size: 24px;
+}
+
+/* Secondary button */
+.micropay-popup__secondary-btn {
+  width: 100%;
+  min-height: var(--micropay-touch-target);
+  padding: 14px 24px;
+  background: transparent;
+  color: var(--micropay-text-secondary);
+  border: 2px solid var(--micropay-border);
+  border-radius: var(--micropay-radius-sm);
+  font-size: var(--micropay-font-size-md);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 12px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.micropay-popup__secondary-btn:active {
+  background: var(--micropay-bg-secondary);
+}
+
+/* ============================================
+   Reassurance Message
+   ============================================ */
+.micropay-popup__reassurance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--micropay-primary-light);
+  border-radius: var(--micropay-radius-xs);
+  font-size: var(--micropay-font-size-xs);
+  color: var(--micropay-primary-dark);
+}
+
+.micropay-popup__reassurance-icon {
+  font-size: 18px;
+}
+
+/* ============================================
+   Status Screens
+   ============================================ */
+.micropay-popup__status {
+  text-align: center;
+  padding: 32px 20px;
+}
+
+/* Spinner */
+.micropay-popup__spinner {
+  width: 64px;
+  height: 64px;
+  border: 5px solid var(--micropay-border);
+  border-top-color: var(--micropay-primary);
+  border-radius: 50%;
+  margin: 0 auto 28px;
+  animation: micropay-spin 0.9s linear infinite;
+}
+
+@keyframes micropay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Phone animation */
+.micropay-popup__phone-animation {
+  font-size: 72px;
+  margin-bottom: 24px;
+  animation: micropay-phone-ring 1.5s ease-in-out infinite;
+}
+
+@keyframes micropay-phone-ring {
+
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.micropay-popup__status-title {
+  font-size: var(--micropay-font-size-xl);
+  font-weight: 700;
+  color: var(--micropay-text);
+  margin-bottom: 12px;
+}
+
+.micropay-popup__status-message {
+  font-size: var(--micropay-font-size-md);
+  color: var(--micropay-text-secondary);
+  max-width: 300px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Numbered Steps */
+.micropay-popup__steps {
+  margin-top: 28px;
+  text-align: left;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.micropay-popup__step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--micropay-border);
+}
+
+.micropay-popup__step:last-child {
+  border-bottom: none;
+}
+
+.micropay-popup__step-number {
+  width: 32px;
+  height: 32px;
+  background: var(--micropay-primary);
+  color: var(--micropay-text-on-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--micropay-font-size-sm);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.micropay-popup__step-text {
+  font-size: var(--micropay-font-size-md);
+  color: var(--micropay-text);
+}
+
+/* ============================================
+   Success State
+   ============================================ */
+.micropay-popup__success-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--micropay-success);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  animation: micropay-success-bounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes micropay-success-bounce {
+  0% {
+    transform: scale(0);
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.micropay-popup__success-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* Receipt Card */
+.micropay-popup__receipt {
+  background: var(--micropay-bg-secondary);
+  border: 1px solid var(--micropay-border);
+  border-radius: var(--micropay-radius-sm);
+  padding: 20px;
+  margin: 24px 0;
+  text-align: left;
+}
+
+.micropay-popup__receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--micropay-border);
+}
+
+.micropay-popup__receipt-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.micropay-popup__receipt-label {
+  font-size: var(--micropay-font-size-sm);
+  color: var(--micropay-text-secondary);
+}
+
+.micropay-popup__receipt-value {
+  font-size: var(--micropay-font-size-md);
+  font-weight: 600;
+  color: var(--micropay-text);
+}
+
+.micropay-popup__receipt-value--mono {
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: var(--micropay-font-size-sm);
+}
+
+/* Share buttons */
+.micropay-popup__share-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.micropay-popup__share-btn {
+  flex: 1;
+  min-height: var(--micropay-touch-target);
+  padding: 12px;
+  background: var(--micropay-bg-secondary);
+  border: 1px solid var(--micropay-border);
+  border-radius: var(--micropay-radius-xs);
+  font-size: var(--micropay-font-size-sm);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.micropay-popup__share-btn--whatsapp {
+  background: #25D366;
+  color: white;
+  border-color: #25D366;
+}
+
+/* ============================================
+   Error State
+   ============================================ */
+.micropay-popup__error-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--micropay-error);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.micropay-popup__error-icon svg {
+  width: 44px;
+  height: 44px;
+}
+
+/* ============================================
+   Help Button - Always Visible
+   ============================================ */
+.micropay-popup__help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  color: var(--micropay-primary);
+  font-size: var(--micropay-font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.micropay-popup__help-icon {
+  font-size: 20px;
+}
+
+/* ============================================
+   Branding Footer
+   ============================================ */
+.micropay-popup__footer {
+  text-align: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--micropay-border);
+  background: var(--micropay-bg-secondary);
+}
+
+.micropay-popup__branding {
+  font-size: var(--micropay-font-size-xs);
+  color: var(--micropay-text-muted);
+}
+
+.micropay-popup__branding strong {
+  color: var(--micropay-primary);
+  font-weight: 700;
+}
+
+/* ============================================
+   Offline Banner
+   ============================================ */
+.micropay-popup__offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: var(--micropay-warning);
+  color: #1a1a1a;
+  font-size: var(--micropay-font-size-sm);
+  font-weight: 600;
+}
+
+.micropay-popup__offline-icon {
+  font-size: 20px;
+}
+
+/* ============================================
+   Quick Amount Selector
+   ============================================ */
+.micropay-popup__quick-amounts {
+  margin-bottom: 20px;
+}
+
+.micropay-popup__quick-amounts-label {
+  font-size: var(--micropay-font-size-sm);
+  color: var(--micropay-text-secondary);
+  margin-bottom: 10px;
+}
+
+.micropay-popup__quick-amounts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.micropay-popup__quick-amount {
+  min-height: var(--micropay-touch-target);
+  padding: 14px;
+  background: var(--micropay-bg-secondary);
+  border: 2px solid var(--micropay-border);
+  border-radius: var(--micropay-radius-xs);
+  font-size: var(--micropay-font-size-md);
+  font-weight: 600;
+  color: var(--micropay-text);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.micropay-popup__quick-amount:active,
+.micropay-popup__quick-amount--selected {
+  background: var(--micropay-primary-light);
+  border-color: var(--micropay-primary);
+  color: var(--micropay-primary);
+}
+
+/* ============================================
+   PREMIUM ENHANCEMENTS
+   ============================================ */
+
+/* Glassmorphism overlay (for premium feel) */
+.micropay-popup--glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.micropay-dark .micropay-popup--glass {
+  background: rgba(18, 18, 18, 0.9);
+}
+
+/* Premium gradient header */
+.micropay-popup__header--premium {
+  background: linear-gradient(135deg, var(--micropay-primary) 0%, var(--micropay-primary-dark) 100%);
+  color: white;
+  border-bottom: none;
+  padding: 16px 20px;
+}
+
+.micropay-popup__header--premium .micropay-popup__secure-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.micropay-popup__header--premium .micropay-popup__close {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.micropay-popup__header--premium .micropay-popup__close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Step Progress Indicator */
+.micropay-step-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: var(--micropay-bg-secondary);
+  border-bottom: 1px solid var(--micropay-border);
+}
+
+.micropay-step-progress__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.micropay-step-progress__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--micropay-border-strong);
+  transition: all 0.3s ease;
+}
+
+.micropay-step-progress__dot--active {
+  background: var(--micropay-primary);
+  box-shadow: 0 0 0 4px var(--micropay-primary-light);
+}
+
+.micropay-step-progress__dot--completed {
+  background: var(--micropay-success);
+}
+
+.micropay-step-progress__line {
+  width: 40px;
+  height: 3px;
+  background: var(--micropay-border);
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.micropay-step-progress__line--completed {
+  background: var(--micropay-success);
+}
+
+/* Pulse animation for awaiting state */
+@keyframes micropay-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.micropay-popup__phone-icon--pulse {
+  animation: micropay-pulse 2s ease-in-out infinite;
+}
+
+/* Shimmer loading effect */
+@keyframes micropay-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.micropay-shimmer {
+  background: linear-gradient(90deg,
+      var(--micropay-bg-secondary) 25%,
+      var(--micropay-bg-tertiary) 50%,
+      var(--micropay-bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: micropay-shimmer 1.5s infinite;
+}
+
+/* Premium button with gradient */
+.micropay-popup__submit--premium {
+  background: linear-gradient(135deg, var(--micropay-primary) 0%, var(--micropay-primary-dark) 100%);
+  box-shadow: 0 4px 15px rgba(0, 166, 81, 0.4);
+}
+
+.micropay-popup__submit--premium:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(0, 166, 81, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Checkmark animation for success */
+@keyframes micropay-checkmark {
+  0% {
+    stroke-dashoffset: 24;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.micropay-popup__success-icon svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: micropay-checkmark 0.4s ease-out 0.2s forwards;
+}
+
+/* Confetti burst (optional) */
+@keyframes micropay-confetti {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.5);
+  }
+}
+
+.micropay-confetti-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: micropay-confetti 1s ease-out forwards;
+}
+
+/* Theme-specific accent colors */
+.micropay-theme-kenya .micropay-popup__submit--premium {
+  background: linear-gradient(135deg, #00A651 0%, #006633 100%);
+  box-shadow: 0 4px 15px rgba(0, 166, 81, 0.4);
+}
+
+.micropay-theme-nigeria .micropay-popup__submit--premium {
+  background: linear-gradient(135deg, #5B2C6F 0%, #3d1e4a 100%);
+  box-shadow: 0 4px 15px rgba(91, 44, 111, 0.4);
+}
+
+.micropay-theme-southafrica .micropay-popup__submit--premium {
+  background: linear-gradient(135deg, #00838F 0%, #004d56 100%);
+  box-shadow: 0 4px 15px rgba(0, 131, 143, 0.4);
+}
+
+/* Improved dark mode contrast */
+.micropay-dark .micropay-popup__amount-value {
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.micropay-dark .micropay-popup__submit--premium {
+  box-shadow: 0 4px 15px rgba(0, 166, 81, 0.6);
+}
+
+/* Secure badge animation */
+@keyframes micropay-secure-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--micropay-primary-light);
+  }
+
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+
+.micropay-popup__lock--animated {
+  animation: micropay-secure-glow 3s ease-in-out infinite;
+  border-radius: 50%;
+  padding: 4px;
+}
