@@ -113,6 +113,47 @@ export class Micropay {
     }
 
     /**
+     * Create a Payment Intent
+     */
+    async createPaymentIntent(data) {
+        if (!this.publicKey) throw new ConfigurationError('Public Key required');
+
+        const response = await fetch(`${this.apiUrl}/payment_intents`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.publicKey,
+                // 'Idempotency-Key': ... // Optional: could expose this
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Failed to create payment intent');
+        return result;
+    }
+
+    /**
+     * Confirm a Payment Intent
+     */
+    async confirmPaymentIntent(intentId, data = {}) {
+        if (!this.publicKey) throw new ConfigurationError('Public Key required');
+
+        const response = await fetch(`${this.apiUrl}/payment_intents/${intentId}/confirm`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.publicKey,
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Failed to confirm payment intent');
+        return result;
+    }
+
+    /**
      * Process a payment session
      * 
      * @param {string} sessionId - Session ID
@@ -160,42 +201,43 @@ export class Micropay {
             if (this.publicKey) {
                 session.awaitConfirmation();
 
-                const response = await fetch(`${this.apiUrl}/charge`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': this.publicKey,
-                    },
-                    body: JSON.stringify({
-                        amount: session.amount,
-                        currency: session.currency,
-                        provider: this.providerName,
-                        customerPhone: this.normalizePhone(customerPhone),
-                        description: session.description,
-                        productId: session.productId,
-                        metadata: session.metadata,
-                    }),
+                // Step A: Create Intent
+                const intent = await this.createPaymentIntent({
+                    amount: session.amount,
+                    currency: session.currency,
+                    customer_phone: this.normalizePhone(customerPhone),
+                    description: session.description,
+                    metadata: {
+                        ...session.metadata,
+                        product_id: session.productId // Pass product ID
+                    }
                 });
 
-                const data = await response.json();
+                // Link Intent ID to Transaction for tracking
+                transaction.externalId = intent.id;
 
-                if (!response.ok) {
-                    throw new PaymentError(data.error || 'Payment failed via Platform', 'PLATFORM_ERROR', transaction.id);
-                }
+                // Step B: Confirm Intent (Trigger STK)
+                const confirmedIntent = await this.confirmPaymentIntent(intent.id, {
+                    client_secret: intent.client_secret
+                });
 
-                if (data.success) {
-                    // NOTE: We do NOT mark the session as complete here.
-                    // It stays in AWAITING_CONFIRMATION until the user completes the STK push.
-                    // The client should poll getTransactionStatus() or listen for webhooks.
-                    transaction.externalId = data.transaction.id;
+                if (confirmedIntent.status === 'processing' || confirmedIntent.status === 'succeeded') {
+                    // Handled successfully
                 } else {
-                    session.fail(new Error('Unknown platform error'));
+                    // Check for immediate failure
+                    const errorMsg = confirmedIntent.metadata?.last_error || 'Payment confirmation failed';
+                    throw new PaymentError(errorMsg, 'PAYMENT_FAILED', intent.id);
                 }
+
+                // NOTE: We do NOT mark the session as complete here.
+                // It stays in AWAITING_CONFIRMATION until the user completes the STK push.
+                // The client should poll getTransactionStatus() or listen for webhooks.
 
                 return {
-                    success: data.success,
+                    success: true,
                     session: session.toJSON(),
                     transaction: transaction.toJSON(),
+                    intent: confirmedIntent
                 };
             }
 

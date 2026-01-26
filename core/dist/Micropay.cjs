@@ -100,6 +100,43 @@ export class Micropay {
   }
 
   /**
+   * Create a Payment Intent
+   */
+  async createPaymentIntent(data) {
+    if (!this.publicKey) throw new ConfigurationError('Public Key required');
+    const response = await fetch(`${this.apiUrl}/payment_intents`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.publicKey
+        // 'Idempotency-Key': ... // Optional: could expose this
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Failed to create payment intent');
+    return result;
+  }
+
+  /**
+   * Confirm a Payment Intent
+   */
+  async confirmPaymentIntent(intentId, data = {}) {
+    if (!this.publicKey) throw new ConfigurationError('Public Key required');
+    const response = await fetch(`${this.apiUrl}/payment_intents/${intentId}/confirm`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.publicKey
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Failed to confirm payment intent');
+    return result;
+  }
+
+  /**
    * Process a payment session
    * 
    * @param {string} sessionId - Session ID
@@ -132,11 +169,6 @@ export class Micropay {
           transactionReference: transaction.id,
           description: session.description
         });
-        if (result.success) {
-          session.complete(result.transactionId);
-        } else {
-          session.fail(result.error);
-        }
         return {
           success: result.success,
           session: session.toJSON(),
@@ -147,36 +179,43 @@ export class Micropay {
       // 2. Platform Mode (Browser/Client with Public Key)
       if (this.publicKey) {
         session.awaitConfirmation();
-        const response = await fetch(`${this.apiUrl}/charge`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': this.publicKey
-          },
-          body: JSON.stringify({
-            amount: session.amount,
-            currency: session.currency,
-            provider: this.providerName,
-            customerPhone: this.normalizePhone(customerPhone),
-            description: session.description,
-            productId: session.productId,
-            metadata: session.metadata
-          })
+
+        // Step A: Create Intent
+        const intent = await this.createPaymentIntent({
+          amount: session.amount,
+          currency: session.currency,
+          customer_phone: this.normalizePhone(customerPhone),
+          description: session.description,
+          metadata: {
+            ...session.metadata,
+            product_id: session.productId // Pass product ID
+          }
         });
-        const data = await response.json();
-        if (!response.ok) {
-          throw new PaymentError(data.error || 'Payment failed via Platform', 'PLATFORM_ERROR', transaction.id);
-        }
-        if (data.success) {
-          // Update session with the transaction ID from the platform
-          session.complete(data.transaction.id);
+
+        // Link Intent ID to Transaction for tracking
+        transaction.externalId = intent.id;
+
+        // Step B: Confirm Intent (Trigger STK)
+        const confirmedIntent = await this.confirmPaymentIntent(intent.id, {
+          client_secret: intent.client_secret
+        });
+        if (confirmedIntent.status === 'processing' || confirmedIntent.status === 'succeeded') {
+          // Handled successfully
         } else {
-          session.fail(new Error('Unknown platform error'));
+          // Check for immediate failure
+          const errorMsg = confirmedIntent.metadata?.last_error || 'Payment confirmation failed';
+          throw new PaymentError(errorMsg, 'PAYMENT_FAILED', intent.id);
         }
+
+        // NOTE: We do NOT mark the session as complete here.
+        // It stays in AWAITING_CONFIRMATION until the user completes the STK push.
+        // The client should poll getTransactionStatus() or listen for webhooks.
+
         return {
-          success: data.success,
+          success: true,
           session: session.toJSON(),
-          transaction: transaction.toJSON() // Note: Transaction ID might be updated to match platform's
+          transaction: transaction.toJSON(),
+          intent: confirmedIntent
         };
       }
 
@@ -189,8 +228,33 @@ export class Micropay {
       };
     } catch (error) {
       session.fail(error);
-      throw new PaymentError(error.message, error.code, transaction.id);
+      throw error;
     }
+  }
+  async getTransactionStatus(transactionId) {
+    if (!this.publicKey) {
+      throw new PaymentError('Public Key required for status check in platform mode');
+    }
+    const response = await fetch(`${this.apiUrl}/status?id=${transactionId}`, {
+      headers: {
+        'x-api-key': this.publicKey
+      }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Failed to fetch status');
+
+    // Update local session if found
+    for (const session of this.sessions.values()) {
+      if (session.transaction?.id === transactionId || session.transaction?.externalId === transactionId) {
+        if (data.transaction.status === 'completed') {
+          session.complete(data.transaction.id);
+        } else if (data.transaction.status === 'failed') {
+          session.fail(new Error(data.transaction.error_message || 'Payment failed'));
+        }
+        break;
+      }
+    }
+    return data.transaction;
   }
 
   /**
@@ -203,16 +267,23 @@ export class Micropay {
   }
 
   /**
-   * Normalize phone to international format
+   * Normalize phone to international format without leading plus or zeros
    */
   normalizePhone(phone) {
-    const countryCode = CURRENCIES[this.currency]?.country === 'MZ' ? '258' : CURRENCIES[this.currency]?.country === 'KE' ? '254' : '258';
-    let cleaned = phone.replace(/[^\d+]/g, '');
-    cleaned = cleaned.replace(/^(\+|00)/, '');
-    if (!cleaned.startsWith(countryCode)) {
-      cleaned = countryCode + cleaned;
+    let cleaned = phone.replace(/[^\d]/g, '');
+    if (cleaned.startsWith('0')) {
+      cleaned = cleaned.slice(1);
     }
-    return cleaned;
+
+    // Default to Kenya (254) if not otherwise specified or already prefixed
+    const countryCode = CURRENCIES[this.currency]?.country === 'MZ' ? '258' : '254';
+    if (cleaned.startsWith('254') && countryCode === '254') {
+      return cleaned;
+    }
+    if (cleaned.startsWith('258') && countryCode === '258') {
+      return cleaned;
+    }
+    return countryCode + cleaned;
   }
 
   /**
