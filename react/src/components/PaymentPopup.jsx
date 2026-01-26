@@ -269,13 +269,13 @@ export function PaymentPopup({
                 </div>
 
                 {/* Amount Display */}
-                <div className="micropay-popup__amount-box">
+                <div className="micropay-popup__amount-section">
                     <div className="micropay-popup__description" id="micropay-title">
                         {popupConfig.description || 'Payment'}
                     </div>
-                    <div className="micropay-popup__amount">
+                    <div className="micropay-popup__amount-display">
                         <span className="micropay-popup__amount-value">{formatAmount(popupConfig.amount)}</span>
-                        <span className="micropay-popup__currency">{currency}</span>
+                        <span className="micropay-popup__currency-symbol">{currency}</span>
                     </div>
                 </div>
 

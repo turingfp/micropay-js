@@ -99,7 +99,7 @@ export function PhoneInput({
                     id={id}
                     type="tel"
                     inputMode="numeric"
-                    pattern="[0-9]*"
+                    pattern="[0-9 ]*"
                     autoComplete="tel-national"
                     value={formatDisplay(value)}
                     onChange={handleChange}
