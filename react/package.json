@@ -23,7 +23,10 @@
         "react",
         "payments",
         "mpesa",
-        "mobile-money"
+        "mobile-money",
+        "stk-push",
+        "daraja",
+        "africa-payments"
     ],
     "author": "Micropay Team",
     "license": "MIT",

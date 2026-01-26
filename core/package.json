@@ -19,19 +19,21 @@
         "prepublishOnly": "npm run build"
     },
     "keywords": [
-        "micropayments",
+        "micropay",
         "mpesa",
         "mobile-money",
         "payments",
         "africa",
-        "emerging-markets",
-        "fintech"
+        "sdk",
+        "api",
+        "fintech",
+        "daraja"
     ],
     "author": "Micropay Team",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/micropay/sdk"
+        "url": "https://github.com/turingfp/micropay"
     },
     "files": [
         "src",
