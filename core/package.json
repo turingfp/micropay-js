@@ -1,5 +1,5 @@
 {
-    "name": "@micropaysdk/core",
+    "name": "@micropay/core",
     "version": "1.0.0",
     "description": "Micropay - Mobile money micropayments for emerging markets",
     "type": "module",
