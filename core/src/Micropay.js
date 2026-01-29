@@ -201,17 +201,25 @@ export class Micropay {
             if (this.publicKey) {
                 session.awaitConfirmation();
 
-                // Step A: Create Intent
-                const intent = await this.createPaymentIntent({
-                    amount: session.amount,
-                    currency: session.currency,
-                    customer_phone: this.normalizePhone(customerPhone),
-                    description: session.description,
-                    metadata: {
-                        ...session.metadata,
-                        product_id: session.productId // Pass product ID
-                    }
-                });
+                // Step A: Create Intent (if not already provided)
+                let intent;
+                if (session.intentId && session.clientSecret) {
+                    intent = {
+                        id: session.intentId,
+                        client_secret: session.clientSecret
+                    };
+                } else {
+                    intent = await this.createPaymentIntent({
+                        amount: session.amount,
+                        currency: session.currency,
+                        customer_phone: this.normalizePhone(customerPhone),
+                        description: session.description,
+                        metadata: {
+                            ...session.metadata,
+                            product_id: session.productId // Pass product ID
+                        }
+                    });
+                }
 
                 // Link Intent ID to Transaction for tracking
                 transaction.externalId = intent.id;
@@ -221,20 +229,21 @@ export class Micropay {
                     client_secret: intent.client_secret
                 });
 
-                if (confirmedIntent.status === 'processing' || confirmedIntent.status === 'succeeded') {
-                    // Handled successfully
+                if (confirmedIntent.status === 'processing') {
+                    // Handled successfully, but pending
+                } else if (confirmedIntent.status === 'succeeded' || confirmedIntent.status === 'completed') {
+                    // Instant success (e.g. Demo or stored card)
+                    transaction.status = 'completed';
+                    session.complete(transaction);
                 } else {
                     // Check for immediate failure
                     const errorMsg = confirmedIntent.metadata?.last_error || 'Payment confirmation failed';
                     throw new PaymentError(errorMsg, 'PAYMENT_FAILED', intent.id);
                 }
 
-                // NOTE: We do NOT mark the session as complete here.
-                // It stays in AWAITING_CONFIRMATION until the user completes the STK push.
-                // The client should poll getTransactionStatus() or listen for webhooks.
-
                 return {
                     success: true,
+                    pendingConfirmation: confirmedIntent.status === 'processing',
                     session: session.toJSON(),
                     transaction: transaction.toJSON(),
                     intent: confirmedIntent

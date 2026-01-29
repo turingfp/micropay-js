@@ -81,6 +81,8 @@ export function MicropayProvider({
                 productId: options.productId,
                 description: options.description,
                 metadata: options.metadata,
+                intentId: options.intentId,
+                clientSecret: options.clientSecret,
                 onSuccess: options.onSuccess,
                 onError: (error) => {
                     options.onError?.(error);
