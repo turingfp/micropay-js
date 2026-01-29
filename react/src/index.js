@@ -23,4 +23,4 @@ export {
     PROVIDERS,
     ENVIRONMENTS,
     CURRENCIES,
-} from '@micropaysdk/core';
+} from '@micropay/core';
