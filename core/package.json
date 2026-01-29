@@ -39,13 +39,9 @@
         "src",
         "dist"
     ],
-    "dependencies": {
-        "@paymentsds/mpesa": "^0.1.0-alpha-9"
-    },
     "devDependencies": {
         "vitest": "^1.0.0"
     },
-    "peerDependencies": {},
     "engines": {
         "node": ">=16.0.0"
     }

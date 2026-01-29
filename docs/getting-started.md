@@ -6,7 +6,7 @@ This guide will get you accepting mobile money payments in under 5 minutes.
 
 - Node.js 16+
 - React 17+ (for React SDK)
-- mPesa developer credentials ([Get them here](https://developer.mpesa.vm.co.mz))
+- mPesa developer credentials ([Get them here](https://developer.safaricom.co.ke))
 
 ## Installation
 
@@ -110,6 +110,7 @@ function ProductCard({ product }) {
 ## Next Steps
 
 - [React Guide](./react-guide.md) - Deep dive into React integration
+- [Developer Workbench](/dashboard/workbench) - Interactive API Tester
 - [Webhooks](./webhooks.md) - Handle payments server-side
 - [Testing](./testing.md) - Test in sandbox environment
 - [API Reference](./api-reference.md) - Complete API docs

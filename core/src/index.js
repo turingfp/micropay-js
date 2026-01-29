@@ -22,6 +22,7 @@ export {
     PaymentError,
     ConfigurationError,
     NetworkError,
+    ProviderError,
 } from './errors.js';
 
 // Types and constants
