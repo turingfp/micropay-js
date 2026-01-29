@@ -1,0 +1,29 @@
+{
+    "name": "@micropay/react-native",
+    "version": "0.1.0",
+    "description": "Micropay SDK for React Native - Accept M-Pesa payments in your mobile app",
+    "main": "src/index.js",
+    "types": "src/index.d.ts",
+    "react-native": "src/index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/turingfp/micropay"
+    },
+    "keywords": [
+        "micropay",
+        "mpesa",
+        "react-native",
+        "payments",
+        "mobile",
+        "africa"
+    ],
+    "author": "Micropay",
+    "license": "MIT",
+    "peerDependencies": {
+        "react": ">=17.0.0",
+        "react-native": ">=0.64.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

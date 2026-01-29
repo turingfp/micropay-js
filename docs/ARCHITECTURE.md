@@ -48,9 +48,12 @@ C4Context
 ## 2. Frontend Architecture (Apps & SDKs)
 
 The frontend ecosystem consists of the Administration Dashboard and the Client SDKs.
+- **Web**: React SDK (Components + Hooks)
+- **Mobile**: React Native SDK & Flutter SDK
+- **Core**: Vanilla JS adapter (Headless)
 
 ### 2.1 Technology Stack
-*   **Runtime**: Browser / Node.js
+*   **Runtime**: Browser / Node.js / iOS / Android
 *   **Core Framework**: React 18 + Vite (Dashboard)
 *   **Networking**: Native `fetch` with custom middleware for Auth via `supabase-js`.
 *   **Styling**: Vanilla CSS Variables + Utility Classes (No preprocessors, ensuring near-zero build config).

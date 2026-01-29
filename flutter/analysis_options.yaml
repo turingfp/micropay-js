@@ -1,0 +1,15 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - always_declare_return_types
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - unawaited_futures
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - avoid_print
+
+analyzer:
+  errors:
+    avoid_print: warning

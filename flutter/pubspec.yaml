@@ -1,0 +1,23 @@
+name: micropay
+description: Official Micropay SDK for Flutter - Accept M-Pesa payments in your mobile app
+version: 0.1.0
+homepage: https://micropay.io
+repository: https://github.com/turingfp/micropay
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.0
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  # No assets needed for this package

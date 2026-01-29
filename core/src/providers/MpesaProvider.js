@@ -1,5 +1,10 @@
 /**
  * MpesaProvider - Native Safaricom (Kenya) implementation
+ * 
+ * Production-Ready Implementation with:
+ * - Query Status polling (STK Push Query)
+ * - Dynamic Callback URLs
+ * - Robust phone normalization (Multi-Country)
  */
 
 import { ProviderError, ConfigurationError, NetworkError, PaymentError } from '../errors.js';
@@ -7,12 +12,23 @@ import { ProviderError, ConfigurationError, NetworkError, PaymentError } from '.
 const URLS = {
     sandbox: {
         auth: 'https://sandbox.safaricom.co.ke/oauth/v1/generate',
-        stk: 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+        stk: 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        stkQuery: 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query'
     },
     production: {
         auth: 'https://api.safaricom.co.ke/oauth/v1/generate',
-        stk: 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+        stk: 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        stkQuery: 'https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query'
     }
+};
+
+// Country Prefixes for East Africa
+const COUNTRY_PREFIXES = {
+    KE: '254', // Kenya
+    TZ: '255', // Tanzania
+    UG: '256', // Uganda
+    RW: '250', // Rwanda
+    MW: '265'  // Malawi
 };
 
 export class MpesaProvider {
@@ -20,6 +36,8 @@ export class MpesaProvider {
         this.name = 'mpesa';
         this.credentials = config.credentials || {};
         this.environment = config.environment || 'sandbox';
+        this.callbackUrl = config.callbackUrl || null; // Required for production
+        this.country = config.country || 'KE'; // Default Kenya
         this.accessToken = null;
         this.tokenExpiry = null;
         this.isInitialized = false;
@@ -32,8 +50,6 @@ export class MpesaProvider {
     }
 
     _validateCredentials() {
-        // We require Consumer Key, Consumer Secret, Shortcode, and Passkey
-        // Map apiKey -> Consumer Key, publicKey -> Consumer Secret for backward compat if needed
         const { consumerKey, consumerSecret, shortcode, passkey, apiKey, publicKey, serviceProviderCode } = this.credentials;
 
         // Normalize
@@ -53,6 +69,11 @@ export class MpesaProvider {
                 `Missing M-Pesa credentials: ${missing.join(', ')}`,
                 missing
             );
+        }
+
+        // Warn if callback URL is not set for production
+        if (this.environment === 'production' && !this.callbackUrl) {
+            console.warn('[MpesaProvider] No callbackUrl configured. This is required for production.');
         }
     }
 
@@ -76,7 +97,6 @@ export class MpesaProvider {
 
             const data = await response.json();
             this.accessToken = data.access_token;
-            // expires_in is in seconds. Subtract a 60s buffer.
             this.tokenExpiry = Date.now() + (parseInt(data.expires_in) * 1000) - 60000;
             return this.accessToken;
         } catch (error) {
@@ -86,9 +106,6 @@ export class MpesaProvider {
 
     _generatePassword(shortcode, passkey, timestamp) {
         const raw = `${shortcode}${passkey}${timestamp}`;
-        // Verify environment supports Buffer (Node.js) or needs btoa (Browser)
-        // Since Core SDK might run in Node, Buffer is safe. For browser, polyfill/shim might be needed.
-        // But typically this SDK is used server-side or in Edge Functions.
         if (typeof Buffer !== 'undefined') {
             return Buffer.from(raw).toString('base64');
         } else {
@@ -96,9 +113,53 @@ export class MpesaProvider {
         }
     }
 
+    /**
+     * Normalizes phone numbers to E.164 format for the configured country.
+     * Handles local formats (e.g., 0712...) and international formats (e.g., +254712...).
+     * 
+     * @param {string} phone - Raw phone number input
+     * @returns {string} Normalized phone number without '+' prefix
+     */
+    _normalizePhone(phone) {
+        // Remove all non-digit characters
+        let normalized = phone.replace(/\D/g, '');
+
+        const countryPrefix = COUNTRY_PREFIXES[this.country] || '254';
+
+        // If starts with 0, replace with country code
+        if (normalized.startsWith('0')) {
+            normalized = countryPrefix + normalized.substring(1);
+        }
+
+        // If doesn't start with country code, prepend it
+        if (!normalized.startsWith(countryPrefix)) {
+            // Check if it starts with another valid prefix (international format)
+            const startsWithKnownPrefix = Object.values(COUNTRY_PREFIXES).some(p => normalized.startsWith(p));
+            if (!startsWithKnownPrefix) {
+                normalized = countryPrefix + normalized;
+            }
+        }
+
+        // Validate length (should be 12 digits for most E.African countries)
+        if (normalized.length < 10 || normalized.length > 15) {
+            console.warn(`[MpesaProvider] Phone number "${phone}" normalized to "${normalized}" may be invalid (length: ${normalized.length})`);
+        }
+
+        return normalized;
+    }
+
     async charge(request) {
         if (!this.isInitialized) {
             await this.initialize();
+        }
+
+        // Validate Callback URL
+        const callbackUrl = request.callbackUrl || this.callbackUrl;
+        if (!callbackUrl) {
+            throw new ConfigurationError(
+                'Missing callbackUrl. A valid HTTPS URL is required for M-Pesa STK Push.',
+                ['callbackUrl']
+            );
         }
 
         try {
@@ -106,10 +167,7 @@ export class MpesaProvider {
             const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
             const password = this._generatePassword(this.shortcode, this.passkey, timestamp);
 
-            // Normalize phone (Basic Kenya normalization)
-            let phone = request.customerPhone.replace('+', '');
-            if (phone.startsWith('0')) phone = '254' + phone.substring(1);
-            if (!phone.startsWith('254')) phone = '254' + phone;
+            const phone = this._normalizePhone(request.customerPhone);
 
             // STK Push Payload
             const payload = {
@@ -121,7 +179,7 @@ export class MpesaProvider {
                 "PartyA": phone,
                 "PartyB": this.shortcode,
                 "PhoneNumber": phone,
-                "CallBackURL": request.callbackUrl || "https://example.com/callback_placeholder",
+                "CallBackURL": callbackUrl,
                 "AccountReference": request.reference || "Payment",
                 "TransactionDesc": request.description || "Payment"
             };
@@ -152,19 +210,79 @@ export class MpesaProvider {
             };
 
         } catch (error) {
-            if (error instanceof ProviderError || error instanceof PaymentError || error instanceof NetworkError) {
+            if (error instanceof ProviderError || error instanceof PaymentError || error instanceof NetworkError || error instanceof ConfigurationError) {
                 throw error;
             }
             throw new PaymentError(`STK Push failed: ${error.message}`);
         }
     }
 
-    // Placeholder for other methods
-    async refund(transactionId, amount, reference) {
-        throw new Error("Refunds are not yet implemented for the Native Kenya Provider.");
+    /**
+     * Query the status of an STK Push transaction.
+     * Use this when no callback is received within 60 seconds.
+     * 
+     * @param {string} checkoutRequestId - The CheckoutRequestID from the charge() response
+     * @returns {Object} Transaction status object
+     */
+    async queryStatus(checkoutRequestId) {
+        if (!this.isInitialized) {
+            await this.initialize();
+        }
+
+        try {
+            const token = await this._getAccessToken();
+            const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+            const password = this._generatePassword(this.shortcode, this.passkey, timestamp);
+
+            const payload = {
+                "BusinessShortCode": this.shortcode,
+                "Password": password,
+                "Timestamp": timestamp,
+                "CheckoutRequestID": checkoutRequestId
+            };
+
+            const response = await fetch(URLS[this.environment].stkQuery, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            // M-Pesa ResultCode meanings:
+            // 0 = Success (User paid)
+            // 1032 = Cancelled by user
+            // 1037 = Timeout (User didn't respond)
+            // 2001 = Wrong PIN
+            // Other codes = Various failures
+
+            let status = 'pending';
+            if (data.ResultCode === '0' || data.ResultCode === 0) {
+                status = 'succeeded';
+            } else if (data.ResultCode !== undefined && data.ResultCode !== null) {
+                status = 'failed';
+            }
+
+            return {
+                success: status === 'succeeded',
+                status,
+                resultCode: data.ResultCode,
+                resultDesc: data.ResultDesc,
+                merchantRequestId: data.MerchantRequestID,
+                checkoutRequestId: data.CheckoutRequestID,
+                rawResponse: data
+            };
+
+        } catch (error) {
+            throw new ProviderError(`Query Status failed: ${error.message}`, this.name, error);
+        }
     }
 
-    async queryStatus(queryRef) {
-        throw new Error("Query Status is not yet implemented for the Native Kenya Provider.");
+    // Placeholder for refunds (B2C reversal is complex and requires separate API setup)
+    async refund(transactionId, amount, reference) {
+        throw new Error("Refunds (B2C Reversals) require additional Daraja API setup. Contact support for implementation.");
     }
 }
