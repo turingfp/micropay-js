@@ -58,3 +58,11 @@ export class SessionError extends MicropayError {
     this.sessionId = sessionId;
   }
 }
+export class ProviderError extends MicropayError {
+  constructor(message, provider = null, originalError = null) {
+    super(message, 'PROVIDER_ERROR');
+    this.name = 'ProviderError';
+    this.provider = provider;
+    this.originalError = originalError;
+  }
+}

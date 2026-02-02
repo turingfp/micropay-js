@@ -1,5 +1,5 @@
 /**
- * @micropay/react
+ * @micropaysdk/react
  * React components and hooks for mobile money payments
  */
 
@@ -23,4 +23,4 @@ export {
     PROVIDERS,
     ENVIRONMENTS,
     CURRENCIES,
-} from '@micropay/core';
+} from '@micropaysdk/core';

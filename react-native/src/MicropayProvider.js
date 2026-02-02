@@ -14,7 +14,7 @@ const MicropayContext = createContext(null);
  * 
  * @example
  * ```jsx
- * import { MicropayProvider } from '@micropay/react-native';
+ * import { MicropayProvider } from '@micropaysdk/react-native';
  * 
  * export default function App() {
  *   return (

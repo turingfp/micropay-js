@@ -58,7 +58,11 @@ function PaymentPopup(_ref) {
     _ref$enableSwipeClose = _ref.enableSwipeClose,
     enableSwipeClose = _ref$enableSwipeClose === void 0 ? true : _ref$enableSwipeClose,
     _ref$enableHaptics = _ref.enableHaptics,
-    enableHaptics = _ref$enableHaptics === void 0 ? true : _ref$enableHaptics;
+    enableHaptics = _ref$enableHaptics === void 0 ? true : _ref$enableHaptics,
+    _ref$premium = _ref.premium,
+    premium = _ref$premium === void 0 ? true : _ref$premium,
+    _ref$glass = _ref.glass,
+    glass = _ref$glass === void 0 ? false : _ref$glass;
   var _useMicropayContext = (0, _MicropayProvider.useMicropayContext)(),
     isPopupOpen = _useMicropayContext.isPopupOpen,
     closePopup = _useMicropayContext.closePopup,
@@ -239,7 +243,42 @@ function PaymentPopup(_ref) {
     }).format(amount);
   };
   if (!isPopupOpen || !popupConfig) return null;
-  var popupClasses = ['micropay-popup', isMobile && fullScreenOnMobile ? 'micropay-popup--fullscreen' : '', theme === 'dark' ? 'micropay-dark' : '', className].filter(Boolean).join(' ');
+  var popupClasses = ['micropay-popup', isMobile && fullScreenOnMobile ? 'micropay-popup--fullscreen' : '', theme === 'dark' ? 'micropay-dark' : '', glass ? 'micropay-popup--glass' : '', className].filter(Boolean).join(' ');
+  var getStepIndex = function getStepIndex() {
+    switch (step) {
+      case STEPS.PHONE:
+        return 0;
+      case STEPS.PROCESSING:
+        return 1;
+      case STEPS.AWAITING:
+        return 2;
+      case STEPS.SUCCESS:
+        return 3;
+      case STEPS.ERROR:
+        return 3;
+      default:
+        return 0;
+    }
+  };
+  var StepProgress = function StepProgress() {
+    return /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress"
+    }, /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__dot ".concat(getStepIndex() >= 0 ? 'micropay-step-progress__dot--active' : '', " ").concat(getStepIndex() > 0 ? 'micropay-step-progress__dot--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__line ".concat(getStepIndex() > 0 ? 'micropay-step-progress__line--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__dot ".concat(getStepIndex() >= 1 ? 'micropay-step-progress__dot--active' : '', " ").concat(getStepIndex() > 1 ? 'micropay-step-progress__dot--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__line ".concat(getStepIndex() > 1 ? 'micropay-step-progress__line--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__dot ".concat(getStepIndex() >= 2 ? 'micropay-step-progress__dot--active' : '', " ").concat(getStepIndex() > 2 ? 'micropay-step-progress__dot--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__line ".concat(getStepIndex() > 2 ? 'micropay-step-progress__line--completed' : '')
+    }), /*#__PURE__*/_react["default"].createElement("div", {
+      className: "micropay-step-progress__dot ".concat(getStepIndex() >= 3 ? 'micropay-step-progress__dot--active' : '')
+    }));
+  };
   return /*#__PURE__*/_react["default"].createElement("div", {
     className: "micropay-popup-overlay ".concat(theme === 'dark' ? 'micropay-dark' : ''),
     onClick: function onClick(e) {
@@ -262,12 +301,12 @@ function PaymentPopup(_ref) {
     className: "micropay-popup__swipe-indicator"
   }, /*#__PURE__*/_react["default"].createElement("div", {
     className: "micropay-popup__swipe-bar"
-  })), /*#__PURE__*/_react["default"].createElement("div", {
-    className: "micropay-popup__header"
+  })), premium && /*#__PURE__*/_react["default"].createElement(StepProgress, null), /*#__PURE__*/_react["default"].createElement("div", {
+    className: "micropay-popup__header ".concat(premium ? 'micropay-popup__header--premium' : '')
   }, /*#__PURE__*/_react["default"].createElement("div", {
     className: "micropay-popup__secure"
   }, /*#__PURE__*/_react["default"].createElement("span", {
-    className: "micropay-popup__lock"
+    className: "micropay-popup__lock ".concat(premium ? 'micropay-popup__lock--animated' : '')
   }, "\uD83D\uDD12"), /*#__PURE__*/_react["default"].createElement("span", {
     className: "micropay-popup__secure-text"
   }, "Secure Payment")), /*#__PURE__*/_react["default"].createElement("button", {
@@ -285,16 +324,16 @@ function PaymentPopup(_ref) {
   }, /*#__PURE__*/_react["default"].createElement("path", {
     d: "M18 6L6 18M6 6l12 12"
   })))), /*#__PURE__*/_react["default"].createElement("div", {
-    className: "micropay-popup__amount-box"
+    className: "micropay-popup__amount-section"
   }, /*#__PURE__*/_react["default"].createElement("div", {
     className: "micropay-popup__description",
     id: "micropay-title"
   }, popupConfig.description || 'Payment'), /*#__PURE__*/_react["default"].createElement("div", {
-    className: "micropay-popup__amount"
+    className: "micropay-popup__amount-display"
   }, /*#__PURE__*/_react["default"].createElement("span", {
     className: "micropay-popup__amount-value"
   }, formatAmount(popupConfig.amount)), /*#__PURE__*/_react["default"].createElement("span", {
-    className: "micropay-popup__currency"
+    className: "micropay-popup__currency-symbol"
   }, currency))), /*#__PURE__*/_react["default"].createElement("div", {
     className: "micropay-popup__content"
   }, step === STEPS.PHONE && /*#__PURE__*/_react["default"].createElement("form", {

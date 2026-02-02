@@ -9,7 +9,7 @@ Micropay is a developer toolkit that enables apps to accept mobile money micropa
 | Package | Description |
 |---------|-------------|
 | `@micropaysdk/core` | Core payment logic (framework-agnostic) |
-| `@micropay/react` | React components & hooks |
+| `@micropaysdk/react` | React components & hooks |
 
 ## Quick Start (React)
 
@@ -22,8 +22,8 @@ npm install @micropaysdk/core @micropaysdk/react
 ### 2. Add Provider
 
 ```jsx
-import { MicropayProvider, PaymentPopup } from '@micropay/react';
-import '@micropay/react/styles.css';
+import { MicropayProvider, PaymentPopup } from '@micropaysdk/react';
+import '@micropaysdk/react/styles.css';
 
 function App() {
   return (
@@ -42,7 +42,7 @@ function App() {
 ### 3. Trigger Payments
 
 ```jsx
-import { usePurchase } from '@micropay/react';
+import { usePurchase } from '@micropaysdk/react';
 
 function BuyButton() {
   const { purchase, isProcessing } = usePurchase();

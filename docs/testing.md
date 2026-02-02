@@ -1,6 +1,18 @@
-# Testing & Sandbox Guide
+Micropay provides a complete Sandbox environment that mimics production behavior without involving real money.
 
-Micropay provides a complete Sandbox environment that mimics production behavior without simulating real money.
+## Sandbox vs. Production
+
+| Feature | Sandbox (Test) | Production (Live) |
+| :--- | :--- | :--- |
+| **Financial Impact** | Fake money (Virtual) | **Real KSh** |
+| **Security** | Flexible (HTTP allowed) | **Strict (HTTPS enforced)** |
+| **M-Pesa API** | Daraja Simulator | Daraja Production API |
+| **Callback Targets** | Allow localhost/ngrok | Enforces valid public HTTPS |
+| **Credentials** | Global test keys | Encrypted Vault keys |
+
+### Mode Enforcement
+In **Production Mode**, Micropay enforces strict safety checks. For example, if your `callbackUrl` uses `http://` or is a known placeholder (`example.com`), the transaction will be rejected to prevent "Black Hole" issues where payments are made but never reconciled.
+
 
 ## Sandbox Mode
 

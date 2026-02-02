@@ -5,7 +5,7 @@
 /// ## Quick Start
 ///
 /// ```dart
-/// import 'package:micropay/micropay.dart';
+/// import 'package:micropaysdk/micropaysdk.dart';
 ///
 /// // Initialize
 /// final micropay = Micropay(publicKey: 'pk_test_...');

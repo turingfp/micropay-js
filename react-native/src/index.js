@@ -5,7 +5,7 @@
  * 
  * Usage:
  * ```javascript
- * import { MicropayProvider, usePayment, PaymentSheet } from '@micropay/react-native';
+ * import { MicropayProvider, usePayment, PaymentSheet } from '@micropaysdk/react-native';
  * 
  * // Wrap your app
  * <MicropayProvider publicKey="pk_test_...">

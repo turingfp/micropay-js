@@ -1,13 +1,13 @@
-# @micropay/react-native
+# @micropaysdk/react-native
 
 Official Micropay SDK for React Native. Accept M-Pesa payments in your mobile app with a beautiful, native UI.
 
 ## Installation
 
 ```bash
-npm install @micropay/react-native
+npm install @micropaysdk/react-native
 # or
-yarn add @micropay/react-native
+yarn add @micropaysdk/react-native
 ```
 
 ## Quick Start
@@ -15,7 +15,7 @@ yarn add @micropay/react-native
 ### 1. Wrap your app with MicropayProvider
 
 ```jsx
-import { MicropayProvider } from '@micropay/react-native';
+import { MicropayProvider } from '@micropaysdk/react-native';
 
 export default function App() {
   return (
@@ -30,7 +30,7 @@ export default function App() {
 
 ```jsx
 import { useState } from 'react';
-import { PaymentSheet, MicropayButton } from '@micropay/react-native';
+import { PaymentSheet, MicropayButton } from '@micropaysdk/react-native';
 
 function CheckoutScreen() {
   const [showPayment, setShowPayment] = useState(false);
@@ -63,7 +63,7 @@ function CheckoutScreen() {
 ### 3. Or use the usePayment hook for custom UI
 
 ```jsx
-import { usePayment } from '@micropay/react-native';
+import { usePayment } from '@micropaysdk/react-native';
 
 function CustomPaymentButton({ amount }) {
   const { initiatePayment, status, error } = usePayment();

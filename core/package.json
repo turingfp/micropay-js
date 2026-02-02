@@ -1,5 +1,5 @@
 {
-    "name": "@micropay/core",
+    "name": "@micropaysdk/core",
     "version": "1.0.0",
     "description": "Micropay - Mobile money micropayments for emerging markets",
     "type": "module",
@@ -44,5 +44,8 @@
     },
     "engines": {
         "node": ">=16.0.0"
+    },
+    "dependencies": {
+        "libphonenumber-js": "^1.12.35"
     }
 }

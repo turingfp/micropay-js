@@ -18,8 +18,8 @@ Complete guide to integrating Micropay in React applications.
 Wrap your app with the provider to enable payments:
 
 ```jsx
-import { MicropayProvider, PaymentPopup } from '@micropay/react';
-import '@micropay/react/styles.css';
+import { MicropayProvider, PaymentPopup } from '@micropaysdk/react';
+import '@micropaysdk/react/styles.css';
 
 function App() {
   return (
@@ -157,7 +157,7 @@ Pre-styled button that triggers payment:
 Styled phone input with country code:
 
 ```jsx
-import { PhoneInput } from '@micropay/react';
+import { PhoneInput } from '@micropaysdk/react';
 
 <PhoneInput
   value={phone}

@@ -14,12 +14,12 @@ This guide will get you accepting mobile money payments in under 5 minutes.
 
 ### React (Web)
 ```bash
-npm install @micropay/core @micropay/react
+npm install @micropaysdk/core @micropaysdk/react
 ```
 
 ### React Native
 ```bash
-npm install @micropay/react-native
+npm install @micropaysdk/react-native
 ```
 
 ### Flutter
@@ -34,8 +34,8 @@ Wrap your app with `MicropayProvider`:
 
 ```jsx
 // App.jsx
-import { MicropayProvider, PaymentPopup } from '@micropay/react';
-import '@micropay/react/styles.css';
+import { MicropayProvider, PaymentPopup } from '@micropaysdk/react';
+import '@micropaysdk/react/styles.css';
 
 function App() {
   return (
@@ -58,7 +58,7 @@ function App() {
 Use the `usePurchase` hook:
 
 ```jsx
-import { usePurchase } from '@micropay/react';
+import { usePurchase } from '@micropaysdk/react';
 
 function UnlockPremiumButton() {
   const { purchase, isProcessing, error } = usePurchase();
@@ -102,7 +102,7 @@ When users click the button:
 For even quicker integration, use the pre-built `PaymentButton`:
 
 ```jsx
-import { PaymentButton } from '@micropay/react';
+import { PaymentButton } from '@micropaysdk/react';
 
 function ProductCard({ product }) {
   return (
@@ -126,7 +126,7 @@ function ProductCard({ product }) {
 
 ### React Native
 ```jsx
-import { PaymentSheet } from '@micropay/react-native';
+import { PaymentSheet } from '@micropaysdk/react-native';
 
 <PaymentSheet
   visible={showPayment}

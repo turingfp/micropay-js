@@ -8,6 +8,8 @@
  */
 
 import { ProviderError, ConfigurationError, NetworkError, PaymentError } from '../errors.js';
+import { normalizePhone } from '../utils/PhoneUtils.js';
+
 
 const URLS = {
     sandbox: {
@@ -121,32 +123,9 @@ export class MpesaProvider {
      * @returns {string} Normalized phone number without '+' prefix
      */
     _normalizePhone(phone) {
-        // Remove all non-digit characters
-        let normalized = phone.replace(/\D/g, '');
-
-        const countryPrefix = COUNTRY_PREFIXES[this.country] || '254';
-
-        // If starts with 0, replace with country code
-        if (normalized.startsWith('0')) {
-            normalized = countryPrefix + normalized.substring(1);
-        }
-
-        // If doesn't start with country code, prepend it
-        if (!normalized.startsWith(countryPrefix)) {
-            // Check if it starts with another valid prefix (international format)
-            const startsWithKnownPrefix = Object.values(COUNTRY_PREFIXES).some(p => normalized.startsWith(p));
-            if (!startsWithKnownPrefix) {
-                normalized = countryPrefix + normalized;
-            }
-        }
-
-        // Validate length (should be 12 digits for most E.African countries)
-        if (normalized.length < 10 || normalized.length > 15) {
-            console.warn(`[MpesaProvider] Phone number "${phone}" normalized to "${normalized}" may be invalid (length: ${normalized.length})`);
-        }
-
-        return normalized;
+        return normalizePhone(phone, this.country);
     }
+
 
     async charge(request) {
         if (!this.isInitialized) {
@@ -157,10 +136,25 @@ export class MpesaProvider {
         const callbackUrl = request.callbackUrl || this.callbackUrl;
         if (!callbackUrl) {
             throw new ConfigurationError(
-                'Missing callbackUrl. A valid HTTPS URL is required for M-Pesa STK Push.',
+                'Missing callbackUrl. A valid HTTPS URL is required for M-Pesa STK Push in production.',
                 ['callbackUrl']
             );
         }
+
+        if (this.environment === 'production' && !callbackUrl.startsWith('https://')) {
+            throw new ConfigurationError(
+                'Insecure callbackUrl. M-Pesa requires an HTTPS endpoint for production callbacks.',
+                ['callbackUrl']
+            );
+        }
+
+        if (callbackUrl.includes('example.com')) {
+            throw new ConfigurationError(
+                'Invalid callbackUrl. Please use your actual server URL instead of the placeholder.',
+                ['callbackUrl']
+            );
+        }
+
 
         try {
             const token = await this._getAccessToken();

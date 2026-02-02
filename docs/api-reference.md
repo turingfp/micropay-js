@@ -4,14 +4,14 @@ Complete API documentation for all Micropay packages.
 
 ---
 
-## @micropay/core
+## @micropaysdk/core
 
 ### createMicropay(config)
 
 Create a Micropay instance:
 
 ```javascript
-import { createMicropay } from '@micropay/core';
+import { createMicropay } from '@micropaysdk/core';
 
 const micropay = createMicropay({
   publicKey: 'pk_live_xxx',
@@ -127,7 +127,7 @@ import {
   PaymentError,
   ConfigurationError,
   NetworkError,
-} from '@micropay/core';
+} from '@micropaysdk/core';
 ```
 
 | Error | When |
@@ -142,7 +142,7 @@ import {
 ## Constants
 
 ```javascript
-import { PROVIDERS, ENVIRONMENTS, CURRENCIES } from '@micropay/core';
+import { PROVIDERS, ENVIRONMENTS, CURRENCIES } from '@micropaysdk/core';
 
 PROVIDERS.MPESA      // 'mpesa'
 PROVIDERS.JAZZCASH   // 'jazzcash' (future)

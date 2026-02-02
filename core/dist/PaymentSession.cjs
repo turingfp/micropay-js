@@ -23,6 +23,8 @@ export class PaymentSession {
     this.description = options.description || '';
     this.customerPhone = null;
     this.transaction = null;
+    this.intentId = options.intentId || null;
+    this.clientSecret = options.clientSecret || null;
     this.metadata = options.metadata || {};
     this.callbacks = {
       onStatusChange: options.onStatusChange || (() => {}),

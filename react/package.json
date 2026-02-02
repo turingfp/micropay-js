@@ -1,5 +1,5 @@
 {
-    "name": "@micropay/react",
+    "name": "@micropaysdk/react",
     "version": "1.0.0",
     "description": "React components and hooks for Micropay mobile money payments",
     "type": "module",
@@ -39,7 +39,7 @@
         "react-dom": ">=17.0.0"
     },
     "dependencies": {
-        "@micropay/core": "^1.0.0"
+        "@micropaysdk/core": "^1.0.0"
     },
     "devDependencies": {
         "@types/react": "^18.0.0",

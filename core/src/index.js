@@ -1,5 +1,5 @@
 /**
- * @micropay/core
+ * @micropaysdk/core
  * Mobile money micropayments SDK for emerging markets
  */
 

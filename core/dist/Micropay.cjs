@@ -19,6 +19,7 @@ import { PaymentSession, SessionStatus } from './PaymentSession.js';
 import { MpesaProvider } from './providers/MpesaProvider.js';
 import { ConfigurationError, ValidationError, PaymentError } from './errors.js';
 import { PROVIDERS, ENVIRONMENTS, PHONE_PATTERNS, CURRENCIES } from './constants.js';
+import { normalizePhone, validatePhone } from './utils/PhoneUtils.js';
 const PROVIDER_MAP = {
   [PROVIDERS.MPESA]: MpesaProvider
 };
@@ -180,17 +181,25 @@ export class Micropay {
       if (this.publicKey) {
         session.awaitConfirmation();
 
-        // Step A: Create Intent
-        const intent = await this.createPaymentIntent({
-          amount: session.amount,
-          currency: session.currency,
-          customer_phone: this.normalizePhone(customerPhone),
-          description: session.description,
-          metadata: {
-            ...session.metadata,
-            product_id: session.productId // Pass product ID
-          }
-        });
+        // Step A: Create Intent (if not already provided)
+        let intent;
+        if (session.intentId && session.clientSecret) {
+          intent = {
+            id: session.intentId,
+            client_secret: session.clientSecret
+          };
+        } else {
+          intent = await this.createPaymentIntent({
+            amount: session.amount,
+            currency: session.currency,
+            customer_phone: this.normalizePhone(customerPhone),
+            description: session.description,
+            metadata: {
+              ...session.metadata,
+              product_id: session.productId // Pass product ID
+            }
+          });
+        }
 
         // Link Intent ID to Transaction for tracking
         transaction.externalId = intent.id;
@@ -199,20 +208,20 @@ export class Micropay {
         const confirmedIntent = await this.confirmPaymentIntent(intent.id, {
           client_secret: intent.client_secret
         });
-        if (confirmedIntent.status === 'processing' || confirmedIntent.status === 'succeeded') {
-          // Handled successfully
+        if (confirmedIntent.status === 'processing') {
+          // Handled successfully, but pending
+        } else if (confirmedIntent.status === 'succeeded' || confirmedIntent.status === 'completed') {
+          // Instant success (e.g. Demo or stored card)
+          transaction.status = 'completed';
+          session.complete(transaction);
         } else {
           // Check for immediate failure
           const errorMsg = confirmedIntent.metadata?.last_error || 'Payment confirmation failed';
           throw new PaymentError(errorMsg, 'PAYMENT_FAILED', intent.id);
         }
-
-        // NOTE: We do NOT mark the session as complete here.
-        // It stays in AWAITING_CONFIRMATION until the user completes the STK push.
-        // The client should poll getTransactionStatus() or listen for webhooks.
-
         return {
           success: true,
+          pendingConfirmation: confirmedIntent.status === 'processing',
           session: session.toJSON(),
           transaction: transaction.toJSON(),
           intent: confirmedIntent
@@ -246,7 +255,7 @@ export class Micropay {
     // Update local session if found
     for (const session of this.sessions.values()) {
       if (session.transaction?.id === transactionId || session.transaction?.externalId === transactionId) {
-        if (data.transaction.status === 'completed') {
+        if (data.transaction.status === 'completed' || data.transaction.status === 'succeeded') {
           session.complete(data.transaction.id);
         } else if (data.transaction.status === 'failed') {
           session.fail(new Error(data.transaction.error_message || 'Payment failed'));
@@ -258,32 +267,40 @@ export class Micropay {
   }
 
   /**
+   * Manually trigger a reconciliation with the provider (e.g. M-Pesa Query API)
+   * Use this if a callback was missed.
+   */
+  async syncTransactionStatus(transactionId) {
+    if (!this.publicKey) {
+      throw new PaymentError('Public Key required for reconciliation');
+    }
+    const response = await fetch(`${this.apiUrl}/payment_intents/${transactionId}/reconcile`, {
+      method: 'POST',
+      headers: {
+        'x-api-key': this.publicKey,
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Reconciliation failed');
+
+    // Update local session
+    await this.getTransactionStatus(transactionId);
+    return data;
+  }
+
+  /**
    * Validate phone number format
    */
   validatePhone(phone) {
-    const pattern = PHONE_PATTERNS[this.country];
-    if (!pattern) return true; // Allow if no pattern
-    return pattern.test(phone.replace(/\s/g, ''));
+    return validatePhone(phone, this.country);
   }
 
   /**
    * Normalize phone to international format without leading plus or zeros
    */
   normalizePhone(phone) {
-    let cleaned = phone.replace(/[^\d]/g, '');
-    if (cleaned.startsWith('0')) {
-      cleaned = cleaned.slice(1);
-    }
-
-    // Default to Kenya (254) if not otherwise specified or already prefixed
-    const countryCode = CURRENCIES[this.currency]?.country === 'MZ' ? '258' : '254';
-    if (cleaned.startsWith('254') && countryCode === '254') {
-      return cleaned;
-    }
-    if (cleaned.startsWith('258') && countryCode === '258') {
-      return cleaned;
-    }
-    return countryCode + cleaned;
+    return normalizePhone(phone, this.country);
   }
 
   /**

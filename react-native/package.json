@@ -1,5 +1,5 @@
 {
-    "name": "@micropay/react-native",
+    "name": "@micropaysdk/react-native",
     "version": "0.1.0",
     "description": "Micropay SDK for React Native - Accept M-Pesa payments in your mobile app",
     "main": "src/index.js",

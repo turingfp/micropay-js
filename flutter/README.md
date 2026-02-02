@@ -33,7 +33,7 @@ flutter pub get
 ### 1. Initialize the Client
 
 ```dart
-import 'package:micropay/micropay.dart';
+import 'package:micropaysdk/micropay.dart';
 
 final micropay = Micropay(
   publicKey: 'pk_test_your_public_key',

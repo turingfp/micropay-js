@@ -1,5 +1,5 @@
 /**
- * @micropay/core
+ * @micropaysdk/core
  * Mobile money micropayments SDK for emerging markets
  */
 
@@ -16,7 +16,7 @@ export { Transaction, TransactionStatus } from './Transaction.js';
 export { MpesaProvider } from './providers/MpesaProvider.js';
 
 // Errors
-export { MicropayError, ValidationError, PaymentError, ConfigurationError, NetworkError } from './errors.js';
+export { MicropayError, ValidationError, PaymentError, ConfigurationError, NetworkError, ProviderError } from './errors.js';
 
 // Types and constants
 export { PROVIDERS, ENVIRONMENTS, CURRENCIES } from './constants.js';
