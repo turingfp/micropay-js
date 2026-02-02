@@ -172,8 +172,8 @@ class _MpesaPhoneFieldState extends State<MpesaPhoneField> {
                   focusNode: widget.focusNode,
                   enabled: widget.enabled,
                   keyboardType: TextInputType.phone,
+                  inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    // LengthLimitingTextInputFormatter removed to support international pastes
                     _PhoneNumberFormatter(),
                   ],
                   onChanged: _onPhoneChanged,
