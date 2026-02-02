@@ -1,6 +1,6 @@
 # @micropaysdk/core
 
-The core Javascript SDK for Micropay. Enable M-Pesa payments in your application with a few lines of code.
+The core JavaScript SDK for Micropay. Enable M-Pesa payments in your application with a few lines of code.
 
 ## Installation
 
@@ -8,28 +8,7 @@ The core Javascript SDK for Micropay. Enable M-Pesa payments in your application
 npm install @micropaysdk/core
 ```
 
-## Quickstart (Curl) ⚡
-
-Test the API directly from your terminal:
-
-```bash
-# 1. Initiate Charge
-curl -X POST https://qlxtpdaphrqlmwvhgazr.supabase.co/functions/v1/micropay-api/charge \
-  -H "Content-Type: application/json" \
-  -H "x-api-key: YOUR_PUBLIC_KEY" \
-  -d '{
-    "amount": 10,
-    "customerPhone": "254700000000",
-    "description": "API Test"
-  }'
-
-# 2. Check Status
-curl -G https://qlxtpdaphrqlmwvhgazr.supabase.co/functions/v1/micropay-api/status \
-  -H "x-api-key: YOUR_PUBLIC_KEY" \
-  --data-urlencode "id=TRANSACTION_ID_OR_REF"
-```
-
-## Quick Start (JS SDK)
+## Quick Start
 
 ```javascript
 import { createMicropay } from '@micropaysdk/core';
@@ -49,12 +28,49 @@ session.on('success', (tx) => {
 });
 ```
 
+## API Usage
+
+### Create a Payment Intent
+
+```javascript
+const intent = await micropay.createPaymentIntent({
+  amount: 500,
+  currency: 'KES',
+  customer_phone: '254712345678',
+  description: 'Order #123'
+});
+```
+
+### Confirm Payment
+
+```javascript
+const confirmed = await micropay.confirmPaymentIntent(intent.id, {
+  payment_method: 'mpesa',
+  phone_number: '254712345678'
+});
+```
+
+### Check Status
+
+```javascript
+const status = await micropay.getPaymentIntent(intent.id);
+console.log(status.status); // 'succeeded' | 'processing' | 'failed'
+```
+
 ## Features
 
 - M-Pesa STK Push support
-- Dynamic balance tracking
-- Automatic webhook handling (via Micropay Engine)
+- Automatic status polling
+- Webhook handling (via Micropay backend)
 - Sandbox & Production environments
+- TypeScript types included
+
+## Configuration
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `publicKey` | string | Your Micropay publishable key |
+| `environment` | 'sandbox' \| 'production' | API environment (default: 'sandbox') |
 
 ## License
 

@@ -6,7 +6,11 @@ Official Micropay SDK for React Native. Accept M-Pesa payments in your mobile ap
 
 ```bash
 npm install @micropaysdk/react-native
-# or
+```
+
+or
+
+```bash
 yarn add @micropaysdk/react-native
 ```
 
@@ -49,7 +53,6 @@ function CheckoutScreen() {
         description="Premium Upgrade"
         onSuccess={(intent) => {
           console.log('Payment successful!', intent);
-          // Navigate to success screen
         }}
         onError={(error) => {
           console.error('Payment failed:', error);
@@ -91,17 +94,16 @@ function CustomPaymentButton({ amount }) {
 
 ## Components
 
-### `<MicropayProvider>`
+### MicropayProvider
 
 Wraps your app to provide Micropay functionality.
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `publicKey` | string | Yes | Your Micropay publishable key |
-| `secretKey` | string | No | Secret key (only for server-side operations) |
 | `environment` | 'sandbox' \| 'production' | No | Defaults to 'sandbox' |
 
-### `<PaymentSheet>`
+### PaymentSheet
 
 Pre-built bottom sheet modal for payments.
 
@@ -116,7 +118,7 @@ Pre-built bottom sheet modal for payments.
 | `onError` | function | No | Called with error message on failure |
 | `theme` | 'dark' \| 'light' | No | UI theme (default: 'dark') |
 
-### `<MicropayButton>`
+### MicropayButton
 
 Styled payment button.
 
@@ -128,7 +130,7 @@ Styled payment button.
 | `variant` | 'primary' \| 'outline' \| 'ghost' | No | Button style |
 | `size` | 'small' \| 'medium' \| 'large' | No | Button size |
 
-### `<MpesaPhoneInput>`
+### MpesaPhoneInput
 
 Phone number input with country selector.
 
@@ -140,7 +142,7 @@ Phone number input with country selector.
 
 ## Hooks
 
-### `usePayment()`
+### usePayment()
 
 Returns payment state and methods.
 
@@ -159,7 +161,7 @@ const {
 } = usePayment();
 ```
 
-### `useMicropay()`
+### useMicropay()
 
 Access the Micropay client directly.
 
@@ -169,14 +171,12 @@ const { client, publicKey, environment } = useMicropay();
 
 ## Production Checklist
 
-- [ ] Replace test keys with production keys
-- [ ] Handle payment webhooks on your server
-- [ ] Test with real M-Pesa sandbox numbers
-- [ ] Implement proper error handling
-- [ ] Add analytics/logging for payment events
+- Replace test keys with production keys
+- Handle payment webhooks on your server
+- Test with real M-Pesa sandbox numbers
+- Implement proper error handling
+- Add analytics/logging for payment events
 
-## Support
+## License
 
-- 📚 [Documentation](https://micropay.io/docs)
-- 💬 [Discord Community](https://discord.gg/micropay)
-- 📧 [Email Support](mailto:support@micropay.io)
+MIT

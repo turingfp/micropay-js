@@ -2,7 +2,7 @@
 
 > The Stripe of Mobile Money for Emerging Markets
 
-Micropay is a developer toolkit that enables apps to accept mobile money micropayments (mPesa, Jazzcash) with a beautiful, drop-in payment popup.
+Micropay is a developer toolkit that enables apps to accept mobile money micropayments (M-Pesa) with a beautiful, drop-in payment popup.
 
 ## Packages
 
@@ -60,7 +60,7 @@ function BuyButton() {
       })}
       disabled={isProcessing}
     >
-      {isProcessing ? 'Processing...' : 'Buy Premium - 50 MZN'}
+      {isProcessing ? 'Processing...' : 'Buy Premium - 50 KES'}
     </button>
   );
 }
@@ -76,12 +76,12 @@ function BuyButton() {
 
 ## Features
 
-- 🔌 **Plug & Play** - Beautiful payment popup, zero UI work
-- 🪝 **React Hooks** - `usePurchase()`, `useMicropay()`, `usePaymentPopup()`
-- 🌍 **Multi-Provider** - mPesa today, Jazzcash/Airtel Money coming
-- 🎨 **Themeable** - Light/dark themes, CSS customization
-- 📱 **Mobile-First** - Designed for emerging market users
-- 🔒 **Secure** - Built on proven mPesa SDK infrastructure
+- **Plug & Play** - Beautiful payment popup, zero UI work
+- **React Hooks** - `usePurchase()`, `useMicropay()`, `usePaymentPopup()`
+- **Multi-Provider** - M-Pesa today, more coming
+- **Themeable** - Light/dark themes, CSS customization
+- **Mobile-First** - Designed for emerging market users
+- **Secure** - Built on proven M-Pesa SDK infrastructure
 
 ## License
 
