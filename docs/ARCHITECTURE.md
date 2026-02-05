@@ -71,7 +71,7 @@ The Dashboard (`apps/web`) follows a strict provider pattern:
 
 ### 2.3 Security Measures
 *   **XSS Protection**: All user inputs sanitized by React default escaping.
-*   **CSP**: Strict Content Security Policies to only allow connections to `functions.v1`.
+*   **CSP**: Strict Content Security Policies to only allow connections to `micropay.dev`.
 *   **JWT Handling**: Access tokens are short-lived (1 hour). Refresh tokens are rotated automatically by the Supabase client.
 
 ---
@@ -87,7 +87,7 @@ Unlike traditional microservices, Micropay uses a **Monolith-on-Edge** pattern. 
 
 ### 3.2 Request Lifecycle
 
-1.  **Ingress**: Request hits `https://.../functions/v1/micropay-api`.
+1.  **Ingress**: Request hits `https://micropay.dev/v1/payment_intents`.
 2.  **Auth Middleware**:
     *   Validates `Authorization: Bearer <JWT>`.
     *   Validates `apikey` (Project Key) - *Note: Verificaton bypassed at Gateway, enforced in Code.*
@@ -202,7 +202,7 @@ To prevent double-charging or double-processing webhooks:
 ## 7. Operational & Deployment View
 
 ### 7.1 CI/CD Pipeline
-*   **Source**: GitHub (`paymentsds/mpesa-js-sdk`)
+*   **Source**: GitHub (`turingfp/micropay`)
 *   **Trigger**: Push to `main`.
 *   **Build**: `npm run build` (Client), `deno check` (Backend).
 *   **Deploy**:

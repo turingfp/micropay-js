@@ -15,11 +15,11 @@
  * });
  */
 
-import { PaymentSession, SessionStatus } from './PaymentSession.js';
-import { MpesaProvider } from './providers/MpesaProvider.js';
-import { ConfigurationError, ValidationError, PaymentError } from './errors.js';
-import { PROVIDERS, ENVIRONMENTS, PHONE_PATTERNS, CURRENCIES } from './constants.js';
-import { normalizePhone, validatePhone } from './utils/PhoneUtils.js';
+import { PaymentSession, SessionStatus } from './PaymentSession.cjs';
+import { MpesaProvider } from './providers/MpesaProvider.cjs';
+import { ConfigurationError, ValidationError, PaymentError } from './errors.cjs';
+import { PROVIDERS, ENVIRONMENTS, PHONE_PATTERNS, CURRENCIES } from './constants.cjs';
+import { normalizePhone, validatePhone } from './utils/PhoneUtils.cjs';
 const PROVIDER_MAP = {
   [PROVIDERS.MPESA]: MpesaProvider
 };
@@ -114,7 +114,7 @@ export class Micropay {
       },
       body: JSON.stringify(data)
     });
-    const result = await response.json();
+    const result = await response.cjson();
     if (!response.ok) throw new Error(result.error || 'Failed to create payment intent');
     return result;
   }
@@ -132,7 +132,7 @@ export class Micropay {
       },
       body: JSON.stringify(data)
     });
-    const result = await response.json();
+    const result = await response.cjson();
     if (!response.ok) throw new Error(result.error || 'Failed to confirm payment intent');
     return result;
   }
@@ -159,7 +159,7 @@ export class Micropay {
     session.setCustomerPhone(customerPhone);
     const transaction = session.startProcessing(this.providerName);
     try {
-      // 1. Direct Provider Mode (Node.js backend with credentials)
+      // 1. Direct Provider Mode (Node.cjs backend with credentials)
       if (this.provider) {
         session.awaitConfirmation();
         const result = await this.provider.charge({
@@ -249,7 +249,7 @@ export class Micropay {
         'x-api-key': this.publicKey
       }
     });
-    const data = await response.json();
+    const data = await response.cjson();
     if (!response.ok) throw new Error(data.error || 'Failed to fetch status');
 
     // Update local session if found
@@ -281,7 +281,7 @@ export class Micropay {
         'Content-Type': 'application/json'
       }
     });
-    const data = await response.json();
+    const data = await response.cjson();
     if (!response.ok) throw new Error(data.error || 'Reconciliation failed');
 
     // Update local session

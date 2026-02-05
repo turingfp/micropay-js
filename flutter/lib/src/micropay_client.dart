@@ -21,7 +21,7 @@ class MicropayConfig {
 
   MicropayConfig({
     required this.publicKey,
-    this.baseUrl = 'https://api.micropay.io/v1',
+    this.baseUrl = 'https://micropay.dev/v1',
     this.timeout = const Duration(seconds: 30),
     this.debug = false,
   });
@@ -61,7 +61,7 @@ class Micropay {
     http.Client? httpClient,
   })  : _config = MicropayConfig(
           publicKey: publicKey,
-          baseUrl: baseUrl ?? 'https://api.micropay.io/v1',
+          baseUrl: baseUrl ?? 'https://micropay.dev/v1',
           timeout: timeout ?? const Duration(seconds: 30),
           debug: debug,
         ),

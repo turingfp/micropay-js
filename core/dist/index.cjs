@@ -4,19 +4,19 @@
  */
 
 // Main client
-export { Micropay, createMicropay } from './Micropay.js';
+export { Micropay, createMicropay } from './Micropay.cjs';
 
 // Session management
-export { PaymentSession, SessionStatus } from './PaymentSession.js';
+export { PaymentSession, SessionStatus } from './PaymentSession.cjs';
 
 // Transaction
-export { Transaction, TransactionStatus } from './Transaction.js';
+export { Transaction, TransactionStatus } from './Transaction.cjs';
 
 // Providers
-export { MpesaProvider } from './providers/MpesaProvider.js';
+export { MpesaProvider } from './providers/MpesaProvider.cjs';
 
 // Errors
-export { MicropayError, ValidationError, PaymentError, ConfigurationError, NetworkError, ProviderError } from './errors.js';
+export { MicropayError, ValidationError, PaymentError, ConfigurationError, NetworkError, ProviderError } from './errors.cjs';
 
 // Types and constants
-export { PROVIDERS, ENVIRONMENTS, CURRENCIES } from './constants.js';
+export { PROVIDERS, ENVIRONMENTS, CURRENCIES } from './constants.cjs';

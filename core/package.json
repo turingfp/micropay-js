@@ -1,6 +1,6 @@
 {
     "name": "@micropaysdk/core",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Micropay - Mobile money micropayments for emerging markets",
     "type": "module",
     "main": "./dist/index.js",
@@ -13,7 +13,7 @@
         }
     },
     "scripts": {
-        "build": "babel src -d dist --out-file-extension .cjs",
+        "build": "rm -rf dist && mkdir -p dist && babel src -d dist --out-file-extension .cjs && node ../../scripts/fix-imports.js ./dist",
         "test": "vitest",
         "lint": "eslint src/",
         "prepublishOnly": "npm run build"

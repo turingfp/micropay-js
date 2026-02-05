@@ -2,8 +2,8 @@
  * PaymentSession - Manages a payment session lifecycle
  */
 
-import { Transaction, TransactionStatus } from './Transaction.js';
-import { SessionError } from './errors.js';
+import { Transaction, TransactionStatus } from './Transaction.cjs';
+import { SessionError } from './errors.cjs';
 export const SessionStatus = {
   IDLE: 'idle',
   COLLECTING_INFO: 'collecting_info',

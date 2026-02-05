@@ -4,7 +4,7 @@
  * Handles all HTTP communication with the Micropay API.
  */
 
-const DEFAULT_API_URL = 'https://qlxtpdaphrqlmwvhgazr.supabase.co/functions/v1/micropay-api';
+const DEFAULT_API_URL = 'https://micropay.dev';
 
 export class MicropayClient {
     constructor(config) {

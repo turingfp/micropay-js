@@ -26,13 +26,15 @@ const PROVIDER_MAP = {
     [PROVIDERS.MPESA]: MpesaProvider,
 };
 
+const DEFAULT_API_URL = 'https://micropay.dev/v1';
+
 export class Micropay {
     constructor(config = {}) {
         this._validateConfig(config);
 
         this.publicKey = config.publicKey;
         this.secretKey = config.secretKey; // Only for server-side
-        this.apiUrl = config.apiUrl || 'https://qlxtpdaphrqlmwvhgazr.supabase.co/functions/v1/micropay-api';
+        this.apiUrl = config.apiUrl || DEFAULT_API_URL;
         this.providerName = config.provider || PROVIDERS.MPESA;
         this.environment = config.environment || ENVIRONMENTS.SANDBOX;
         this.country = config.country || 'KE';

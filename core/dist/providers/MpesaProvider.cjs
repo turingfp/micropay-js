@@ -7,8 +7,8 @@
  * - Robust phone normalization (Multi-Country)
  */
 
-import { ProviderError, ConfigurationError, NetworkError, PaymentError } from '../errors.js';
-import { normalizePhone } from '../utils/PhoneUtils.js';
+import { ProviderError, ConfigurationError, NetworkError, PaymentError } from '../errors.cjs';
+import { normalizePhone } from '../utils/PhoneUtils.cjs';
 const URLS = {
   sandbox: {
     auth: 'https://sandbox.safaricom.co.ke/oauth/v1/generate',
@@ -96,7 +96,7 @@ export class MpesaProvider {
         const text = await response.text();
         throw new NetworkError(`Auth failed: ${response.status} ${text}`);
       }
-      const data = await response.json();
+      const data = await response.cjson();
       this.accessToken = data.access_token;
       this.tokenExpiry = Date.now() + parseInt(data.expires_in) * 1000 - 60000;
       return this.accessToken;
@@ -167,7 +167,7 @@ export class MpesaProvider {
         },
         body: JSON.stringify(payload)
       });
-      const data = await response.json();
+      const data = await response.cjson();
       if (data.ResponseCode !== "0") {
         throw new PaymentError(`${data.ResponseCode}: ${data.ResponseDescription}`, data.ResponseCode, request.transactionReference);
       }
@@ -218,7 +218,7 @@ export class MpesaProvider {
         },
         body: JSON.stringify(payload)
       });
-      const data = await response.json();
+      const data = await response.cjson();
 
       // M-Pesa ResultCode meanings:
       // 0 = Success (User paid)

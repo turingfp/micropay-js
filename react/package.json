@@ -1,6 +1,6 @@
 {
     "name": "@micropaysdk/react",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "React components and hooks for Micropay mobile money payments",
     "type": "module",
     "main": "./dist/index.js",
@@ -13,7 +13,7 @@
         "./styles.css": "./src/styles/styles.css"
     },
     "scripts": {
-        "build": "babel src -d dist --out-file-extension .cjs --presets @babel/preset-env,@babel/preset-react",
+        "build": "rm -rf dist && mkdir -p dist && babel src -d dist --out-file-extension .cjs --presets @babel/preset-env,@babel/preset-react && node ../../scripts/fix-imports.js ./dist",
         "test": "vitest",
         "storybook": "storybook dev -p 6006",
         "prepublishOnly": "npm run build"
@@ -34,6 +34,10 @@
     ],
     "author": "Micropay Team",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/turingfp/micropay"
+    },
     "peerDependencies": {
         "react": ">=17.0.0",
         "react-dom": ">=17.0.0"
