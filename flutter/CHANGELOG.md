@@ -1,3 +1,8 @@
+## 0.2.0
+
+- **Breaking**: Default API URL changed to `micropay.dev`
+- Improved documentation and examples
+
 ## 0.1.0
 
 - Initial release
