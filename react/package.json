@@ -1,6 +1,6 @@
 {
     "name": "@micropaysdk/react",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "React components and hooks for Micropay mobile money payments",
     "type": "module",
     "main": "./dist/index.js",

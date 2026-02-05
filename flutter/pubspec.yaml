@@ -1,6 +1,6 @@
 name: micropaysdk
 description: Official Micropay SDK for Flutter - Accept M-Pesa payments in your mobile app
-version: 0.1.0
+version: 0.2.0
 homepage: https://micropay.dev
 repository: https://github.com/turingfp/micropay-js
 
